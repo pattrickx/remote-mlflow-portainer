@@ -6,13 +6,14 @@ Deploy a complete MLflow tracking server with MinIO (S3-compatible storage) and 
 
 - **MLflow**: Experiment tracking (Port 5000)
 - **MinIO**: Object storage for artifacts (Ports 9000, 9001)
+ - **MinIO**: Object storage for artifacts (Ports 9002, 9003)
 - **MySQL**: Backend store for MLflow (Port 3306)
 - **Adminer**: Database management UI (Port 8080)
 
 ## Default Credentials
 
 ### MinIO
-- **Console URL**: http://your-server:9001
+- **Console URL**: http://your-server:9003
 - **Admin**: ROOTNAME / CHANGEME123
 - **MLflow User**: MLFlowUser / MyFlowPass
 
@@ -40,6 +41,7 @@ Deploy a complete MLflow tracking server with MinIO (S3-compatible storage) and 
 
 - **MLflow UI**: http://seu-ip:5000
 - **MinIO Console**: http://seu-ip:9001
+ - **MinIO Console**: http://seu-ip:9003
 - **Adminer (MySQL)**: http://seu-ip:8080
 
 ## Melhorias Incluídas
