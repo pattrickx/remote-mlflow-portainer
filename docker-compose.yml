@@ -1,3 +1,4 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
@@ -8,32 +9,40 @@ services:
       MINIO_ROOT_USER: ROOTNAME
       MINIO_ROOT_PASSWORD: CHANGEME123
     ports:
-      - "9002:9000"
-      - "9003:9001"
+      - "9002:9000"  # API port
+      - "9003:9001"  # Console port
     volumes:
       - minio_data:/data
     networks:
       - mlflow_network
     restart: unless-stopped
+    healthcheck:  # Add a health check
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
 
   minio_setup:
     image: minio/mc
     depends_on:
-      - minio
+      minio:
+        condition: service_healthy  # Wait for MinIO to be healthy
     environment:
       AWS_ACCESS_KEY_ID: ROOTNAME
       AWS_SECRET_ACCESS_KEY: CHANGEME123
     entrypoint: >
       /bin/sh -c "
-        echo 'Starting MinIO setup...' &&
-        until mc alias set myminio http://minio:9000 ROOTNAME CHANGEME123; do
-          echo 'Waiting for MinIO...' && sleep 2;
+        echo 'Waiting for MinIO to be fully ready...' &&
+        # Keep retrying until mc alias works
+        until mc alias set myminio http://minio:9000 ROOTNAME CHANGEME123 > /dev/null 2>&1; do
+          echo 'MinIO not ready, retrying in 3 seconds...' && sleep 3;
         done &&
-        echo 'Creating bucket...' &&
+        echo 'MinIO is ready. Creating bucket...' &&
         mc mb myminio/flow-bucket --ignore-existing &&
         echo 'Setting bucket policy...' &&
         mc anonymous set download myminio/flow-bucket &&
-        echo 'Creating user...' &&
+        echo 'Creating MLFlow user...' &&
         mc admin user add myminio MLFlowUser MyFlowPass &&
         echo 'Setting user policy...' &&
         mc admin policy attach myminio readwrite --user MLFlowUser &&
