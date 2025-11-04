@@ -9,14 +9,17 @@ done
 
 echo "MinIO is ready. Setting up buckets and users..."
 
-# Create the bucket
+# Create the bucket (usar --ignore-existing para evitar erros)
 mc mb myminio/flow-bucket --ignore-existing
 
-# Create MLFlow user
+# Set bucket policy to public for testing (opcional)
+mc anonymous set download myminio/flow-bucket
+
+# Create MLFlow user if doesn't exist
 mc admin user add myminio MLFlowUser MyFlowPass
 
 # Apply readwrite policy for MLFlow user
-mc admin policy set myminio readwrite user=MLFlowUser
+mc admin policy attach myminio readwrite --user MLFlowUser
 
 echo "MinIO setup completed successfully!"
 echo "Bucket 'flow-bucket' created"
