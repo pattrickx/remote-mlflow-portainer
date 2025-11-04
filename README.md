@@ -4,9 +4,8 @@ Deploy a complete MLflow tracking server with MinIO (S3-compatible storage) and 
 
 ## Services Included
 
-- **MLflow**: Experiment tracking (Port 5000)
-- **MinIO**: Object storage for artifacts (Ports 9000, 9001)
- - **MinIO**: Object storage for artifacts (Ports 9002, 9003)
+- **MLflow**: Experiment tracking (Port 5001)
+- **MinIO**: Object storage for artifacts (Ports 9002, 9003)
 - **MySQL**: Backend store for MLflow (Port 3306)
 - **Adminer**: Database management UI (Port 8080)
 
@@ -24,7 +23,7 @@ Deploy a complete MLflow tracking server with MinIO (S3-compatible storage) and 
 - **Password**: mlflow_password
 
 ### MLflow
-- **URL**: http://your-server:5000
+- **URL**: http://your-server:5001
 
 ## Deployment with Portainer
 
@@ -39,9 +38,8 @@ Deploy a complete MLflow tracking server with MinIO (S3-compatible storage) and 
 
 ## URLs de Acesso Após Deploy
 
-- **MLflow UI**: http://seu-ip:5000
-- **MinIO Console**: http://seu-ip:9001
- - **MinIO Console**: http://seu-ip:9003
+- **MLflow UI**: http://seu-ip:5001
+- **MinIO Console**: http://seu-ip:9003
 - **Adminer (MySQL)**: http://seu-ip:8080
 
 ## Melhorias Incluídas
