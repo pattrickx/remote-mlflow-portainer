@@ -80,16 +80,8 @@ services:
       AWS_ACCESS_KEY_ID: MLFlowUser
       AWS_SECRET_ACCESS_KEY: MyFlowPass
       MLFLOW_S3_ENDPOINT_URL: http://minio:9000
-    command: >
-      sh -c "
-        echo 'Waiting for services...' &&
-        sleep 15 &&
-        mlflow server 
-          --backend-store-uri mysql+pymysql://mlflow_user:mlflow_password@mysql_mlflow/mlflow_db 
-          --default-artifact-root s3://flow-bucket/ 
-          --host 0.0.0.0 
-          --port 5000
-      "
+      # Forçar Gunicorn a ouvir em 0.0.0.0
+      GUNICORN_CMD_ARGS: "--bind=0.0.0.0:5000"
     depends_on:
       mysql_mlflow:
         condition: service_healthy
