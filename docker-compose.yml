@@ -9,32 +9,32 @@ services:
       MINIO_ROOT_USER: ROOTNAME
       MINIO_ROOT_PASSWORD: CHANGEME123
     ports:
-      - "9002:9000"  # API port
-      - "9003:9001"  # Console port
+      - "9002:9000"  # API Port
+      - "9003:9001"  # Console Port
     volumes:
       - minio_data:/data
     networks:
       - mlflow_network
     restart: unless-stopped
-    healthcheck:  # Add a health check
+    healthcheck:  # Critical: Wait for MinIO to be ready
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 10s
       timeout: 5s
       retries: 20
-      start_period: 10s
+      start_period: 30s
 
   minio_setup:
     image: minio/mc
     depends_on:
       minio:
-        condition: service_healthy  # Wait for MinIO to be healthy
+        condition: service_healthy  # Waits for the healthcheck to pass
     environment:
       AWS_ACCESS_KEY_ID: ROOTNAME
       AWS_SECRET_ACCESS_KEY: CHANGEME123
     entrypoint: >
       /bin/sh -c "
         echo 'Waiting for MinIO to be fully ready...' &&
-        # Keep retrying until mc alias works
+        # Keep retrying until the mc alias command works
         until mc alias set myminio http://minio:9000 ROOTNAME CHANGEME123 > /dev/null 2>&1; do
           echo 'MinIO not ready, retrying in 3 seconds...' && sleep 3;
         done &&
@@ -46,11 +46,11 @@ services:
         mc admin user add myminio MLFlowUser MyFlowPass &&
         echo 'Setting user policy...' &&
         mc admin policy attach myminio readwrite --user MLFlowUser &&
-        echo 'MinIO setup completed successfully!'
+        echo '✅ MinIO setup completed successfully!'
       "
     networks:
       - mlflow_network
-    restart: on-failure
+    # Does not restart; it's a one-time setup job.
 
   mysql_mlflow:
     image: mysql:8.0
@@ -82,7 +82,7 @@ services:
     restart: unless-stopped
     depends_on:
       - mysql_mlflow
-      - minio_setup
+      - minio_setup  # MLflow starts only after setup is done
 
 volumes:
   minio_data:
